@@ -96,18 +96,18 @@ export default function ProductsPage() {
     router.push(`/products?${params.toString()}`, { scroll: false });
   };
 
-  const fetchWishlist = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+ const fetchWishlist = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) return;
 
-    try {
-      const data = await api.getWishlist(token);
-      const ids = new Set(data.wishlist_items?.map((item: any) => item.product.id) || []);
-      setWishlistIds(ids);
-    } catch (error) {
-      console.error('Error fetching wishlist:', error);
-    }
-  };
+  try {
+    const data = await api.getWishlist(token);
+    const ids = new Set<number>(data.wishlist_items?.map((item: any) => item.product.id) || []);
+    setWishlistIds(ids);
+  } catch (error) {
+    console.error('Error fetching wishlist:', error);
+  }
+};
 
   const toggleWishlist = async (productId: number, e: React.MouseEvent) => {
     e.preventDefault();
