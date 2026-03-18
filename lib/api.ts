@@ -1,12 +1,4 @@
-const API_BASE_URL = (() => {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `http://${hostname}:5000/api`;
-    }
-  }
-  return 'http://127.0.0.1:5000/api';
-})();
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
 
 export const api = {
   // Auth
@@ -34,29 +26,27 @@ export const api = {
     return res.json();
   },
 
-  getProduct: async (id: number) => {
-    const token = localStorage.getItem('token');
-    const headers: any = {};
+  getProduct: async (id: number, token?: string) => {
+    const headers: HeadersInit = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
-    const res = await fetch(`${API_BASE_URL}/products/${id}`, {
-      headers,
-    });
+    const res = await fetch(`${API_BASE_URL}/products/${id}`, { headers });
     return res.json();
   },
 
   // Cart
   getCart: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/cart/`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+    const res = await fetch(`${API_BASE_URL}/cart`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return res.json();
   },
 
   addToCart: async (token: string, productId: number, quantity: number) => {
-    const res = await fetch(`${API_BASE_URL}/cart/`, {
+    const res = await fetch(`${API_BASE_URL}/cart/items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -67,46 +57,87 @@ export const api = {
     return res.json();
   },
 
-  removeFromCart: async (token: string, cartItemId: number) => {
-    const res = await fetch(`${API_BASE_URL}/cart/${cartItemId}`, {
+  updateCartItem: async (token: string, itemId: number, quantity: number) => {
+    const res = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ quantity }),
+    });
+    return res.json();
+  },
+
+  removeFromCart: async (token: string, itemId: number) => {
+    const res = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  clearCart: async (token: string) => {
+    const res = await fetch(`${API_BASE_URL}/cart/clear`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return res.json();
   },
 
   // Orders
-  getOrders: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders/`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return res.json();
-  },
-
-  createOrder: async (token: string, shippingAddress: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders/`, {
+  createOrder: async (token: string, shippingAddress?: string, notes?: string) => {
+    const res = await fetch(`${API_BASE_URL}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ shipping_address: shippingAddress }),
+      body: JSON.stringify({ shipping_address: shippingAddress, notes }),
+    });
+    return res.json();
+  },
+
+  getOrders: async (token: string) => {
+    const res = await fetch(`${API_BASE_URL}/orders`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  getOrder: async (token: string, orderId: number) => {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return res.json();
   },
 
   // Wishlist
   getWishlist: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+    const res = await fetch(`${API_BASE_URL}/wishlist`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return res.json();
   },
 
   addToWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+    const res = await fetch(`${API_BASE_URL}/wishlist`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ product_id: productId }),
     });
     return res.json();
   },
@@ -114,14 +145,9 @@ export const api = {
   removeFromWishlist: async (token: string, productId: number) => {
     const res = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return res.json();
-  },
-
-  checkWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/check/${productId}`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
     return res.json();
   },
