@@ -25,13 +25,7 @@ interface Category {
 
 // Get API URL dynamically
 const getApiUrl = () => {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `http://${hostname}:5000`;
-    }
-  }
-  return 'http://127.0.0.1:5000';
+  return process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:5000';
 };
 
 export default function ProductsPage() {
@@ -209,6 +203,7 @@ export default function ProductsPage() {
     setLoadingAI(false);
   }
 };
+
   const fetchAISearchResults = async (query: string) => {
     setLoading(true);
     try {
@@ -224,7 +219,7 @@ export default function ProductsPage() {
     }
   };
 
-  const fetchProducts = async (categoryId?: number) => {
+  const fetchProducts = async (categoryId?: number | null) => {
     setLoading(true);
     try {
       const apiUrl = getApiUrl();
@@ -235,10 +230,8 @@ export default function ProductsPage() {
       params.append('page', currentPage.toString());
       params.append('per_page', perPage.toString());
       
-      if (categoryId !== undefined) {
-        if (categoryId !== null) {
-          params.append('category_id', categoryId.toString());
-        }
+      if (categoryId !== undefined && categoryId !== null) {
+        params.append('category_id', categoryId.toString());
       } else if (selectedCategory !== null) {
         params.append('category_id', selectedCategory.toString());
       }
@@ -387,7 +380,7 @@ export default function ProductsPage() {
                         touchAction: 'pan-x',
                       }}
                     >
-                      {aiRecommendations.map((product, index) => (
+                      {aiRecommendations.map((product) => (
                         <Link
                           key={product.id}
                           href={`/products/${product.id}`}
