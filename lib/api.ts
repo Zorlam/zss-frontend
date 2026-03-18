@@ -151,4 +151,13 @@ export const api = {
     });
     return res.json();
   },
+
+  checkWishlist: async (token: string, productId: number) => {
+    const res = await fetch(`${API_BASE_URL}/wishlist/check/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
 };
