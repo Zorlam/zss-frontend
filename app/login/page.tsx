@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,16 +20,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const getApiUrl = () => {
-    if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
-      if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-        return `http://${hostname}:5000`;
-      }
-    }
-    return 'http://127.0.0.1:5000';
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -45,26 +36,23 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
+      const data = await api.login(loginEmail, loginPassword);
+      
+      console.log('Response:', data);
 
-      const data = await res.json();
-      // Log Error
-      console.log('Response:', res.status, data);
-
-      if (res.ok) {
+      if (data.access_token) {
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
         router.push('/products');
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch (err) {
-      setError('Too many login attempts, please try again later.');
+    } catch (err: any) {
+      if (err.message && err.message.includes('429')) {
+        setError('Too many login attempts. Please wait a minute and try again.');
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -94,20 +82,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          username: signupUsername, 
-          email: signupEmail, 
-          password: signupPassword 
-        }),
-      });
+      const data = await api.register(signupUsername, signupEmail, signupPassword);
 
-      const data = await res.json();
-
-      if (res.ok) {
+      if (data.access_token) {
         setIsSignUp(false);
         setError('');
         setLoginEmail(signupEmail);
