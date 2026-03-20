@@ -363,7 +363,7 @@ export default function ProductsPage() {
                     </h2>
                     <p className="text-gray-600">Recommendations based on your recent activity</p>
                     <div className="inline-block mt-3 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                      Products you might like, {localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).username : 'Guest'}
+                      Products you might like, {typeof window !== 'undefined' && localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).username : 'Guest'}
                     </div>
                   </div>
                   
