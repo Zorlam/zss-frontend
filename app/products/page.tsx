@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Sparkles, Heart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { api } from '@/lib/api';
+export const dynamic = 'force-dynamic';
 
 interface Product {
   id: number;
