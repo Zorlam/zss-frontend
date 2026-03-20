@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+
 export default function CreateProductPage() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -51,7 +53,7 @@ export default function CreateProductPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/categories');
+      const res = await fetch(`${API_URL}/products/categories`);
       const data = await res.json();
       setCategories(data.categories || []);
     } catch (err) {
@@ -73,7 +75,7 @@ export default function CreateProductPage() {
     formData.append('image', file);
 
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/upload-image', {
+      const res = await fetch(`${API_URL}/products/upload-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -115,7 +117,7 @@ export default function CreateProductPage() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/', {
+      const res = await fetch(`${API_URL}/products/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -12,6 +12,8 @@ interface Category {
   description: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+
 export default function ManageCategoriesPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -45,7 +47,7 @@ export default function ManageCategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/categories');
+      const res = await fetch(`${API_URL}/products/categories`);
       const data = await res.json();
       setCategories(data.categories || []);
     } catch (err) {
@@ -79,8 +81,8 @@ export default function ManageCategoriesPage() {
 
     try {
       const url = editingCategory
-        ? `http://127.0.0.1:5000/api/products/categories/${editingCategory.id}`
-        : 'http://127.0.0.1:5000/api/products/categories';
+        ? `${API_URL}/products/categories/${editingCategory.id}`
+        : `${API_URL}/products/categories`;
 
       const method = editingCategory ? 'PUT' : 'POST';
 
@@ -115,7 +117,7 @@ export default function ManageCategoriesPage() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/products/categories/${categoryId}`, {
+      const res = await fetch(`${API_URL}/products/categories/${categoryId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

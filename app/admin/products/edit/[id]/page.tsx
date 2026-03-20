@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -53,7 +55,7 @@ export default function EditProductPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/categories');
+      const res = await fetch(`${API_URL}/products/categories`);
       const data = await res.json();
       setCategories(data.categories || []);
     } catch (err) {
@@ -65,7 +67,7 @@ export default function EditProductPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/products/${params.id}`, {
+      const res = await fetch(`${API_URL}/products/${params.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -110,7 +112,7 @@ export default function EditProductPage() {
     formData.append('image', file);
 
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/products/upload-image', {
+      const res = await fetch(`${API_URL}/products/upload-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -152,7 +154,7 @@ export default function EditProductPage() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/products/${params.id}`, {
+      const res = await fetch(`${API_URL}/products/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
