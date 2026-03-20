@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { ShoppingCart, User, LogOut, Home, Search, Menu, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+
 interface NavbarProps {
   onMenuClick: () => void;
 }
@@ -50,11 +52,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
     if (!token) return;
 
     try {
-      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000';
-
-      const res = await fetch(`${apiUrl}/api/cart/`, {
+      const res = await fetch(`${API_URL}/cart/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -76,11 +74,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
 
     setLoadingSuggestions(true);
     try {
-      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000';
-
-      const res = await fetch(`${apiUrl}/api/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
+      const res = await fetch(`${API_URL}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
       const data = await res.json();
       setSuggestions(data.suggestions || []);
       setShowSuggestions(true);
