@@ -92,11 +92,12 @@ export default function LoginPage() {
       } else {
         setError(data.error || 'Registration failed');
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: any) {
+  console.error('Signup error:', err);
+  setError(err.message || 'Something went wrong. Please try again.');
+} finally {
+  setLoading(false);
+}
   };
 
   return (
