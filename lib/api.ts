@@ -11,18 +11,26 @@ export const api = {
     return res.json();
   },
 
- register: async (username: string, email: string, password: string) => {
-  const res = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || 'Registration failed');
-  }
-  return data;
-},
+  register: async (username: string, email: string, password: string) => {
+    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('Backend validation errors:', data);
+      // Handle validation errors object
+      if (data.errors) {
+        const errorMessages = Object.entries(data.errors)
+          .map(([field, messages]: [string, any]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+          .join('; ');
+        throw new Error(errorMessages);
+      }
+      throw new Error(data.error || 'Registration failed');
+    }
+    return data;
+  },
 
   // Products
   getProducts: async () => {
@@ -76,92 +84,4 @@ export const api = {
   removeFromCart: async (token: string, itemId: number) => {
     const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  clearCart: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/cart/clear`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  // Orders
-  createOrder: async (token: string, shippingAddress?: string, notes?: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ shipping_address: shippingAddress, notes }),
-    });
-    return res.json();
-  },
-
-  getOrders: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders/`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  getOrder: async (token: string, orderId: number) => {
-    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  // Wishlist
-  getWishlist: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  addToWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ product_id: productId }),
-    });
-    return res.json();
-  },
-
-  removeFromWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-
-  checkWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist/check/${productId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.json();
-  },
-};
+      headers:
