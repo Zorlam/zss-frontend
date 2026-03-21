@@ -84,4 +84,92 @@ export const api = {
   removeFromCart: async (token: string, itemId: number) => {
     const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
       method: 'DELETE',
-      headers:
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  clearCart: async (token: string) => {
+    const res = await fetch(`${API_BASE_URL}/cart/clear`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  // Orders
+  createOrder: async (token: string, shippingAddress?: string, notes?: string) => {
+    const res = await fetch(`${API_BASE_URL}/orders/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ shipping_address: shippingAddress, notes }),
+    });
+    return res.json();
+  },
+
+  getOrders: async (token: string) => {
+    const res = await fetch(`${API_BASE_URL}/orders/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  getOrder: async (token: string, orderId: number) => {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  // Wishlist
+  getWishlist: async (token: string) => {
+    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  addToWishlist: async (token: string, productId: number) => {
+    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ product_id: productId }),
+    });
+    return res.json();
+  },
+
+  removeFromWishlist: async (token: string, productId: number) => {
+    const res = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+
+  checkWishlist: async (token: string, productId: number) => {
+    const res = await fetch(`${API_BASE_URL}/wishlist/check/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.json();
+  },
+};
