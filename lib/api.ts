@@ -11,14 +11,18 @@ export const api = {
     return res.json();
   },
 
-  register: async (username: string, email: string, password: string) => {
-    const res = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    });
-    return res.json();
-  },
+ register: async (username: string, email: string, password: string) => {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Registration failed');
+  }
+  return data;
+},
 
   // Products
   getProducts: async () => {
