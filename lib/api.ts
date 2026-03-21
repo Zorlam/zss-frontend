@@ -46,7 +46,7 @@ export const api = {
   },
 
   addToCart: async (token: string, productId: number, quantity: number) => {
-    const res = await fetch(`${API_BASE_URL}/cart/items`, {
+    const res = await fetch(`${API_BASE_URL}/cart/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const api = {
   },
 
   updateCartItem: async (token: string, itemId: number, quantity: number) => {
-    const res = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
+    const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export const api = {
   },
 
   removeFromCart: async (token: string, itemId: number) => {
-    const res = await fetch(`${API_BASE_URL}/cart/items/${itemId}`, {
+    const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
