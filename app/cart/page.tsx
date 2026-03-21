@@ -48,42 +48,28 @@ export default function CartPage() {
     }
   };
 
-  const updateQuantity = async (cartItemId: number, newQuantity: number) => {
-    if (newQuantity < 1) {
-      // If quantity becomes 0, remove the item
-      await handleRemove(cartItemId);
-      return;
-    }
+ const updateQuantity = async (cartItemId: number, newQuantity: number) => {
+  if (newQuantity < 1) {
+    // If quantity becomes 0, remove the item
+    await handleRemove(cartItemId);
+    return;
+  }
 
-    const token = localStorage.getItem('token');
-    if (!token) return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
 
-    setUpdating(cartItemId);
-    try {
-      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000';
-
-      const res = await fetch(`${apiUrl}/api/cart/${cartItemId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ quantity: newQuantity }),
-      });
-
-      if (res.ok) {
-        await fetchCart();
-        // Trigger cart update event for navbar
-        window.dispatchEvent(new Event('cartUpdated'));
-      }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-    } finally {
-      setUpdating(null);
-    }
-  };
+  setUpdating(cartItemId);
+  try {
+    await api.updateCartItem(token, cartItemId, newQuantity);
+    await fetchCart();
+    // Trigger cart update event for navbar
+    window.dispatchEvent(new Event('cartUpdated'));
+  } catch (error) {
+    console.error('Error updating quantity:', error);
+  } finally {
+    setUpdating(null);
+  }
+};
 
   const handleRemove = async (cartItemId: number) => {
     const token = localStorage.getItem('token');
