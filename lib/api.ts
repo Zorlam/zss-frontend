@@ -37,7 +37,7 @@ export const api = {
 
   // Cart
   getCart: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/cart`, {
+    const res = await fetch(`${API_BASE_URL}/cart/`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -91,7 +91,7 @@ export const api = {
 
   // Orders
   createOrder: async (token: string, shippingAddress?: string, notes?: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders`, {
+    const res = await fetch(`${API_BASE_URL}/orders/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const api = {
   },
 
   getOrders: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/orders`, {
+    const res = await fetch(`${API_BASE_URL}/orders/`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -122,7 +122,7 @@ export const api = {
 
   // Wishlist
   getWishlist: async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist`, {
+    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -131,7 +131,7 @@ export const api = {
   },
 
   addToWishlist: async (token: string, productId: number) => {
-    const res = await fetch(`${API_BASE_URL}/wishlist`, {
+    const res = await fetch(`${API_BASE_URL}/wishlist/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
