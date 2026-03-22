@@ -7,6 +7,7 @@ import { Sparkles, Heart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { api } from '@/lib/api';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
 
 interface Product {
   id: number;
@@ -23,11 +24,6 @@ interface Category {
   name: string;
   slug: string;
 }
-
-// Get API URL dynamically
-const getApiUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:5000';
-};
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -68,22 +64,22 @@ export default function ProductsPage() {
     setCurrentPage(pageFromUrl);
   }, [pageFromUrl]);
 
- useEffect(() => {
-  fetchCategories();
-  
-  // Only fetch user-specific data if logged in
-  const token = localStorage.getItem('token');
-  if (token) {
-    fetchWishlist();
-    fetchAIRecommendations();
-  }
-  
-  if (aiSearchQuery) {
-    fetchAISearchResults(aiSearchQuery);
-  } else {
-    fetchProducts();
-  }
-}, [searchQuery, aiSearchQuery, currentPage, isMobile]);
+  useEffect(() => {
+    fetchCategories();
+    
+    // Only fetch user-specific data if logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchWishlist();
+      fetchAIRecommendations();
+    }
+    
+    if (aiSearchQuery) {
+      fetchAISearchResults(aiSearchQuery);
+    } else {
+      fetchProducts();
+    }
+  }, [searchQuery, aiSearchQuery, currentPage, isMobile]);
 
   const updateUrlWithPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -91,18 +87,18 @@ export default function ProductsPage() {
     router.push(`/products?${params.toString()}`, { scroll: false });
   };
 
- const fetchWishlist = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) return;
+  const fetchWishlist = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-  try {
-    const data = await api.getWishlist(token);
-    const ids = new Set<number>(data.wishlist_items?.map((item: any) => item.product.id) || []);
-    setWishlistIds(ids);
-  } catch (error) {
-    console.error('Error fetching wishlist:', error);
-  }
-};
+    try {
+      const data = await api.getWishlist(token);
+      const ids = new Set<number>(data.wishlist_items?.map((item: any) => item.product.id) || []);
+      setWishlistIds(ids);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    }
+  };
 
   const toggleWishlist = async (productId: number, e: React.MouseEvent) => {
     e.preventDefault();
@@ -133,8 +129,7 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/products/categories`);
+      const res = await fetch(`${API_URL}/products/categories`);
       const data = await res.json();
       setCategories(data.categories || []);
     } catch (error) {
@@ -142,74 +137,72 @@ export default function ProductsPage() {
     }
   };
 
- const fetchAIRecommendations = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) return;
+  const fetchAIRecommendations = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-  // Check if user has changed or just logged in
-  const currentUser = localStorage.getItem('user');
-  const lastRecommendedUser = sessionStorage.getItem('lastRecommendedUser');
-  
-  if (currentUser) {
-    const userData = JSON.parse(currentUser);
-    const userId = userData.id || userData.user_id;
+    // Check if user has changed or just logged in
+    const currentUser = localStorage.getItem('user');
+    const lastRecommendedUser = sessionStorage.getItem('lastRecommendedUser');
     
-    // Show recommendations if:
-    // 1. Different user logged in, OR
-    // 2. Same user but hasn't seen recommendations this session
-    if (lastRecommendedUser !== String(userId)) {
-      // New user or different user - reset and show
-      sessionStorage.removeItem('aiModalShown');
-    } else {
-      // Same user - check if already shown this session
-      const modalShown = sessionStorage.getItem('aiModalShown');
-      if (modalShown) return;
-    }
-  }
-
-  setLoadingAI(true);
-  try {
-    const apiUrl = getApiUrl();
-    const res = await fetch(`${apiUrl}/api/recommendations/ai`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    
-    if (!res.ok) {
-      setLoadingAI(false);
-      return;
-    }
-    
-    const data = await res.json();
-    
-    if (data.recommendations && data.recommendations.length > 0) {
-      setAiRecommendations(data.recommendations);
-      setTimeout(() => setShowAIModal(true), 500);
+    if (currentUser) {
+      const userData = JSON.parse(currentUser);
+      const userId = userData.id || userData.user_id;
       
-      // Mark as shown for this user in this session
-      sessionStorage.setItem('aiModalShown', 'true');
-      
-      // Track which user saw recommendations
-      const currentUser = localStorage.getItem('user');
-      if (currentUser) {
-        const userData = JSON.parse(currentUser);
-        const userId = userData.id || userData.user_id;
-        sessionStorage.setItem('lastRecommendedUser', String(userId));
+      // Show recommendations if:
+      // 1. Different user logged in, OR
+      // 2. Same user but hasn't seen recommendations this session
+      if (lastRecommendedUser !== String(userId)) {
+        // New user or different user - reset and show
+        sessionStorage.removeItem('aiModalShown');
+      } else {
+        // Same user - check if already shown this session
+        const modalShown = sessionStorage.getItem('aiModalShown');
+        if (modalShown) return;
       }
     }
-  } catch (error) {
-    console.error('Error fetching AI recommendations:', error);
-  } finally {
-    setLoadingAI(false);
-  }
-};
+
+    setLoadingAI(true);
+    try {
+      const res = await fetch(`${API_URL}/recommendations/ai`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (!res.ok) {
+        setLoadingAI(false);
+        return;
+      }
+      
+      const data = await res.json();
+      
+      if (data.recommendations && data.recommendations.length > 0) {
+        setAiRecommendations(data.recommendations);
+        setTimeout(() => setShowAIModal(true), 500);
+        
+        // Mark as shown for this user in this session
+        sessionStorage.setItem('aiModalShown', 'true');
+        
+        // Track which user saw recommendations
+        const currentUser = localStorage.getItem('user');
+        if (currentUser) {
+          const userData = JSON.parse(currentUser);
+          const userId = userData.id || userData.user_id;
+          sessionStorage.setItem('lastRecommendedUser', String(userId));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching AI recommendations:', error);
+    } finally {
+      setLoadingAI(false);
+    }
+  };
 
   const fetchAISearchResults = async (query: string) => {
     setLoading(true);
     try {
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/search/ai?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`${API_URL}/search/ai?q=${encodeURIComponent(query)}`);
       const data = await res.json();
       setProducts(data.products || []);
       setTotalPages(1);
@@ -223,9 +216,8 @@ export default function ProductsPage() {
   const fetchProducts = async (categoryId?: number | null) => {
     setLoading(true);
     try {
-      const apiUrl = getApiUrl();
       const perPage = isMobile ? 12 : 18;
-      let url = `${apiUrl}/api/products/`;
+      let url = `${API_URL}/products/`;
       const params = new URLSearchParams();
       
       params.append('page', currentPage.toString());
