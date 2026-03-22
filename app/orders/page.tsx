@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Package, CheckCircle, Clock, XCircle } from 'lucide-react';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
 
 interface Order {
   id: number;
@@ -32,7 +33,7 @@ export default function OrderHistoryPage() {
 
   const fetchOrders = async (token: string) => {
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/orders/', {
+      const res = await fetch(`${API_URL}/orders/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
