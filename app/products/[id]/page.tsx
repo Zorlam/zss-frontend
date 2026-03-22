@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { ArrowLeft, ShoppingCart, Minus, Plus, Package, Shirt, Check, Heart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+
 interface Product {
   id: number;
   name: string;
@@ -39,11 +41,7 @@ export default function ProductDetailPage() {
 
   const fetchRelatedProducts = async (categoryId: number, currentProductId: number) => {
     try {
-      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000';
-      
-      const res = await fetch(`${apiUrl}/api/products/?category_id=${categoryId}&per_page=8`);
+      const res = await fetch(`${API_URL}/products/?category_id=${categoryId}&per_page=8`);
       const data = await res.json();
       
       const filtered = (data.products || [])
@@ -62,11 +60,7 @@ export default function ProductDetailPage() {
     if (!token) return;
 
     try {
-      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000';
-
-      const res = await fetch(`${apiUrl}/api/cart/`, {
+      const res = await fetch(`${API_URL}/cart/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -114,6 +108,23 @@ export default function ProductDetailPage() {
     }
   };
 
+  const trackView = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return; // Only track for logged-in users
+
+    try {
+      await fetch(`${API_URL}/recommendations/track/${params.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      // Silent fail - tracking is not critical
+      console.log('View tracking failed:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -126,6 +137,7 @@ export default function ProductDetailPage() {
         
         fetchCartQuantity();
         checkWishlist();
+        trackView(); // Track product view for recommendations
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
