@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+const API_URL =process.env.NEXT_PUBLIC_API_URL || 'http://127.0.01:5000/api';
 
 interface Product {
   id: number;
@@ -42,7 +43,7 @@ export default function ManageProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/products/?page=${currentPage}&per_page=50`);
+      const res = await fetch(`${API_URL}/products/?page=${currentPage}&per_page=50`);
       const data = await res.json();
       setProducts(data.products || []);
       
@@ -62,7 +63,7 @@ export default function ManageProductsPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/products/${productId}`, {
+    const res = await fetch(`${API_URL}/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
