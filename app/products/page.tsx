@@ -344,7 +344,7 @@ export default function ProductsPage() {
               >
                 <button
                   onClick={() => setShowAIModal(false)}
-                  className="absolute top-4 right-4 z-10 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition-all hover:rotate-90 duration-300"
+                  className="absolute top-2 right-2 md:top-4 md:right-4 z-10 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition-all hover:rotate-90 duration-300"
                 >
                   ✕
                 </button>
