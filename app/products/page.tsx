@@ -482,7 +482,7 @@ export default function ProductsPage() {
                             : 'bg-gray-50 text-gray-900 hover:bg-gray-100'
                         }`}
                       >
-                        <div className="text-4xl mb-3">🛍</div>
+                        <div className="text-4xl mb-3"></div>
                         <div className="font-bold text-lg">All Products</div>
                       </button>
                       
@@ -500,14 +500,14 @@ export default function ProductsPage() {
                           }`}
                         >
                           <div className="text-4xl mb-3">
-                            {category.name.toLowerCase().includes('shirt') ? '🛍' : 
-                             category.name.toLowerCase().includes('dress') ? '🛍' :
-                             category.name.toLowerCase().includes('pant') || category.name.toLowerCase().includes('jean') ? '🛍' :
-                             category.name.toLowerCase().includes('shoe') ? '🛍' :
-                             category.name.toLowerCase().includes('bag') ? '🛍' :
-                             category.name.toLowerCase().includes('hat') ? '🛍' :
-                             category.name.toLowerCase().includes('jacket') ? '🛍' :
-                             '🛍'}
+                            {category.name.toLowerCase().includes('shirt') ? '' : 
+                             category.name.toLowerCase().includes('dress') ? '' :
+                             category.name.toLowerCase().includes('pant') || category.name.toLowerCase().includes('jean') ? '' :
+                             category.name.toLowerCase().includes('shoe') ? '' :
+                             category.name.toLowerCase().includes('bag') ? '' :
+                             category.name.toLowerCase().includes('hat') ? '' :
+                             category.name.toLowerCase().includes('jacket') ? '' :
+                             ''}
                           </div>
                           <div className="font-bold text-lg">{category.name}</div>
                         </button>
