@@ -19,8 +19,28 @@
   }
 }
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Product names, descriptions, buttons - all body text */
+p, span, div, a, button, input, textarea {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Make headings in product cards cleaner */
+h1, h2, h3 {
+  letter-spacing: -0.01em;
+  font-weight: 500;
 }
